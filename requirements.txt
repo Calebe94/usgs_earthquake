@@ -7,3 +7,5 @@ python-dotenv>=0.21
 requests
 geopy
 httpx
+asgiref
+adrf
