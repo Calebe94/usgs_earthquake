@@ -6,3 +6,4 @@ dj_database_url==2.2.0
 python-dotenv>=0.21
 requests
 geopy
+httpx
