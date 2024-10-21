@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'earthquakes',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
