@@ -16,6 +16,32 @@ services:
       interval: 10s
       retries: 5
 
+  redis:
+    image: redis:7.4.1-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 10
+
+  celery_worker:
+    build: .
+    command: celery -A earthquake_app worker --loglevel=INFO
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    env_file:
+      - ./.env
+
   web:
     build: .
     command: >
@@ -27,6 +53,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+      - celery_worker
     environment:
       - DATABASE_URL=${DATABASE_URL}
     env_file:
@@ -34,3 +62,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
