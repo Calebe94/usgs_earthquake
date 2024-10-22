@@ -33,7 +33,7 @@ class EarthquakeSearchView(APIView):
 
         task = fetch_earthquakes_task.delay(city_id, start_date, end_date)
         return JsonResponse(
-            {"task_id": task.id},
+            {"id": task.id},
             status=status.HTTP_202_ACCEPTED)
 
 
