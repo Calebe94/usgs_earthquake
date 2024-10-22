@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from celery import shared_task
+from django.core.cache import cache
 from .utils import get_earthquakes, find_closest_earthquake
 from .models import City
 import asyncio
@@ -7,6 +8,12 @@ import asyncio
 
 @shared_task
 def fetch_earthquakes_task(city_id, start_date, end_date):
+    cache_key = f"earthquake_{city_id}_{start_date}_{end_date}"
+
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        return cached_result
+
     try:
         city = City.objects.get(id=city_id)
     except City.DoesNotExist:
@@ -17,6 +24,7 @@ def fetch_earthquakes_task(city_id, start_date, end_date):
         return {"message": "Failed to retrieve earthquakes"}
 
     closest_earthquake, distance = find_closest_earthquake(city, earthquakes)
+
     if closest_earthquake:
         result = {
             "city": city.name,
@@ -28,5 +36,6 @@ def fetch_earthquakes_task(city_id, start_date, end_date):
     else:
         result = {"message": "No results found"}
 
-    # TODO: save results in cache with TTL of 1 day
+    cache.set(cache_key, result, timeout=60*60*24)
+
     return result
