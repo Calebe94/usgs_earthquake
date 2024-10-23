@@ -9,3 +9,8 @@ geopy
 httpx
 asgiref
 adrf
+celery
+redis>=4.5.0
+kombu>=5.2.0
+celery[redis]==5.2.7
+django-redis
