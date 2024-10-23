@@ -44,7 +44,7 @@ services:
       - ./.env
 
   frontend_builder:
-    image: node:alpine
+    image: node:lts-alpine
     working_dir: /code/frontend
     volumes:
       - .:/code
