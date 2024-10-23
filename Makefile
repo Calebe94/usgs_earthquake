@@ -19,6 +19,9 @@ stop:
 
 restart: stop start
 
+build:
+	@docker-compose up frontend_builder
+
 log:
 	@docker-compose logs "${CONTAINER}"
 
