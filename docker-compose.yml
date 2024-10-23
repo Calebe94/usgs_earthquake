@@ -39,6 +39,7 @@ services:
     environment:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - START_TYPE=WORKER
     env_file:
       - ./.env
 
@@ -57,6 +58,7 @@ services:
       - celery_worker
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - START_TYPE=WEB
     env_file:
       - ./.env
 
