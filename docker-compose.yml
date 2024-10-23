@@ -49,10 +49,6 @@ services:
     volumes:
       - .:/code
     command: sh -c "npm install && npm run build"
-    depends_on:
-      - db
-      - redis
-      - celery_worker
 
   web:
     build: .
