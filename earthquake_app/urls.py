@@ -20,12 +20,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from earthquakes.views import EarthquakeSearchView, EarthquakeResultView
-from earthquakes.views import CityViewSet
+from earthquakes.views import CityViewSet, HomePageView
 
 router = DefaultRouter()
 router.register(r'cities', CityViewSet)
 
 urlpatterns = [
+    path('', HomePageView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/cities/<int:city_id>/earthquakes/',

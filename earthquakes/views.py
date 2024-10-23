@@ -9,6 +9,7 @@ from .serializers import CitySerializer
 from asgiref.sync import sync_to_async
 from .tasks import fetch_earthquakes_task
 from celery.result import AsyncResult
+from django.views.generic import TemplateView
 
 
 class CityCreateView(generics.CreateAPIView):
@@ -50,3 +51,7 @@ class EarthquakeResultView(APIView):
         else:
             return JsonResponse({"message": "Task failed"},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class HomePageView(TemplateView):
+    template_name = 'vue/index.html'
