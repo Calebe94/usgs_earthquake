@@ -11,7 +11,8 @@ install:
 shell:
 	@poetry shell
 
-start:
+# I did that to insure that the front end will be built before running the Django app
+start: build
 	@docker-compose up -d --build
 
 stop:
