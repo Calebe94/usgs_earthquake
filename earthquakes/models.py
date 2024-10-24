@@ -41,3 +41,7 @@ class CachedEarthquakeData(models.Model):
             start_date__lte=end_date,
             end_date__gte=start_date
         )
+
+    def clean(self):
+        if self.end_date > timezone.now().date():
+            self.end_date = timezone.now().date()

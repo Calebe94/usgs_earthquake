@@ -227,13 +227,15 @@ export default {
     },
     async getHistory() {
       try {
+        this.history = [];
         const response = await axios.get(`/api/results/`);
+        console.log(response);
         const results = response.data || [];
 
         const flattenedResults = results.flat().map((result) => {
           let date;
           try {
-            date = new Date(result.date);
+            date = new Date(result.data.date);
             if (isNaN(date.getTime())) {
               throw new Error("Invalid date");
             }
@@ -243,11 +245,11 @@ export default {
           }
 
           return {
-            city: result.city || "Unknown",
+            city: result.data.city || "Unknown",
             date: date.toISOString(),
-            place: result.place || "Unknown",
-            magnitude: result.magnitude || 0,
-            distance_km: result.distance_km || 0,
+            place: result.data.place || "Unknown",
+            magnitude: result.data.magnitude || 0,
+            distance_km: result.data.distance_km || 0,
           };
         });
 
@@ -258,7 +260,7 @@ export default {
     },
     async retryFetchResults(requestId) {
       let attempts = 0;
-      const maxAttempts = 5;
+      const maxAttempts = 10;
       const delay = 500;
 
       while (attempts < maxAttempts) {
@@ -273,14 +275,7 @@ export default {
             await this.delay(delay);
           } else {
             this.earthquakeResults = results;
-
-            this.history.push(
-              ...results.map((result) => ({
-                ...result,
-                date: new Date(result.date).toISOString(),
-              }))
-            );
-
+            this.getHistory();
             return;
           }
         } catch (error) {
@@ -492,33 +487,43 @@ tr:hover {
   text-align: left;
   border: 1px solid #ddd;
 }
-
 @media screen and (max-width: 768px) {
   .responsive-table thead {
     display: none;
   }
 
-  .responsive-table tr {
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
     display: block;
-    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 10px;
     border-bottom: 2px solid #ddd;
   }
 
   .responsive-table td {
-    display: block;
     text-align: right;
+    padding-left: 20%;
     position: relative;
-    padding-left: 50%;
   }
 
   .responsive-table td::before {
     content: attr(data-label);
     position: absolute;
-    left: 0;
-    width: 45%;
-    padding-left: 10px;
+    left: 10px;
+    width: calc(50% - 20px);
+    white-space: nowrap;
     font-weight: bold;
     text-align: left;
+  }
+
+  .responsive-table td[data-label="Date"] {
+    white-space: normal;
+    word-wrap: break-word;
   }
 }
 </style>
