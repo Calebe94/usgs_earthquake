@@ -32,7 +32,6 @@
     <div v-if="loading" class="loading">Loading...</div>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
 
-    <!-- City Registration Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal">
         <h3>Create City</h3>
@@ -83,23 +82,23 @@
 
     <div v-if="history.length > 0" class="history-container">
       <h3>History of Results</h3>
-      <table>
+      <table class="responsive-table">
         <thead>
           <tr>
             <th>City</th>
             <th>Magnitude</th>
             <th>Place</th>
             <th>Date</th>
-            <th>Distance (km)</th>
+            <th>Distance</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="result in history" :key="result.date">
-            <td>{{ result.city }}</td>
-            <td>{{ result.magnitude }}</td>
-            <td>{{ result.place }}</td>
-            <td>{{ new Date(result.date).toLocaleString() }}</td>
-            <td>{{ result.distance_km }}</td>
+            <td data-label="City">{{ result.city }}</td>
+            <td data-label="Magnitude">{{ result.magnitude }}</td>
+            <td data-label="Place">{{ result.place }}</td>
+            <td data-label="Date">{{ result.date }}</td>
+            <td data-label="Distance">{{ result.distance_km }}</td>
           </tr>
         </tbody>
       </table>
@@ -480,5 +479,46 @@ tr:hover {
 .fade-out {
   opacity: 0;
   transition: opacity 0.5s ease-out;
+}
+
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+@media screen and (max-width: 768px) {
+  .responsive-table thead {
+    display: none;
+  }
+
+  .responsive-table tr {
+    display: block;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .responsive-table td {
+    display: block;
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-left: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
 }
 </style>
