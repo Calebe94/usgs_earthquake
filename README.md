@@ -301,6 +301,26 @@ curl -X GET http://localhost:8000/api/results/ \
 
 This will return a list of cached results in JSON format.
 
+### Future Improvements
+
+While this project meets the basic requirements, there are several enhancements that could be made to improve scalability, performance, and user experience. Below are some potential areas for future improvements:
+
+1. Connection Pooling: Currently, each database query opens a new connection, which can lead to performance bottlenecks when scaling. Implementing a connection pooler (e.g., `pgbouncer`) would optimize database connections between Django and PostgreSQL, reducing latency.
+
+2. API Rate Limiting: Introduce rate limiting to prevent abuse and ensure fair usage of the earthquake search endpoints.
+
+3. Background Task Scalability: The current implementation offloads earthquake search tasks to Celery workers, but the task queue could be improved for better scalability. We could implement task priorities and monitoring to track worker health and task failures.
+
+4. Frontend Pagination: For the `GET /api/results/` endpoint that retrieves cached results, pagination and filtering would help manage large datasets more efficiently. Adding parameters such as `limit`, `offset`, and filtering by data ranges.
+
+5. Refactor for Cloud-native: Modularize the application to deploy on Kubernetes or similar container orchestration platforms, enhancing scalability and fault tolerance. In other words, would be great to configure some pipelines for dev and prod environments.
+
+6. Extended Test Coverage: Improve unit and integration test coverage, particularly for edge cases and error handling, ensuring higher system reliability.
+
+7. Monitoring and Obeservability: Integrate logging and monitoring tools such as Grafana, Prometheus or even Sentry to track the health of the system, task processing, and API performance.
+
+I think that these improvements would enhance the robustness, scalability, and user experience of the project, making it more suitable for production environments and high-traffic use cases.
+
 # Developer
 
 | <img src="https://github.com/Calebe94.png?size=200" alt="Edimar Calebe Castanho"> |
