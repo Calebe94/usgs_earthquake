@@ -31,6 +31,7 @@
 
     <div v-if="loading" class="loading">Loading...</div>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+
     <!-- City Registration Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal">
@@ -45,7 +46,7 @@
             <input
               type="number"
               id="latitude"
-              step="0.001"
+              step="any"
               v-model.number="newCity.latitude"
             />
           </div>
@@ -54,7 +55,7 @@
             <input
               type="number"
               id="longitude"
-              step="0.001"
+              step="any"
               v-model.number="newCity.longitude"
             />
           </div>
@@ -79,9 +80,28 @@
       </ul>
     </div>
 
-    <div v-if="history" class="history-container">
+    <div v-if="history.length > 0" class="history-container">
       <h3>History of Results</h3>
-      <table></table>
+      <table>
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>Magnitude</th>
+            <th>Place</th>
+            <th>Date</th>
+            <th>Distance (km)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="result in history" :key="result.date">
+            <td>{{ result.city }}</td>
+            <td>{{ result.magnitude }}</td>
+            <td>{{ result.place }}</td>
+            <td>{{ new Date(result.date).toLocaleString() }}</td>
+            <td>{{ result.distance_km }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -100,18 +120,20 @@ export default {
       loading: false,
       errorMessage: "",
       earthquakeResults: [],
-      showModal: false, // for modal visibility
+      showModal: false,
       newCity: {
-        // object to hold new city data
         name: "",
         latitude: null,
         longitude: null,
       },
-      modalMessage: "", // message to display after form submission
+      modalMessage: "",
+      history: [],
+      modalMessageClass: "",
     };
   },
   mounted() {
     this.fetchCities();
+    this.getHistory();
     document.title = "USGS Earthquake - Code Challenge";
   },
   methods: {
@@ -127,49 +149,46 @@ export default {
         });
     },
     closeModal() {
-      this.showModal = false; // Hide the modal
+      this.showModal = false;
     },
     async submitCity() {
-      this.modalMessageClass = ""; // Reset any previous message class
+      this.modalMessageClass = "";
       try {
         const response = await axios.post("/api/cities/", this.newCity);
-        this.cities.push(response.data); // Add the new city to the list
+        this.cities.push(response.data);
         this.modalMessage = "City registered successfully!";
-        this.closeModal(); // Close the modal
+        this.closeModal();
 
-        // Clear the modal message after 3 seconds with a fade-out effect
         setTimeout(() => {
-          this.modalMessageClass = "fade-out"; // Trigger fade-out
+          this.modalMessageClass = "fade-out";
           setTimeout(() => {
-            this.modalMessage = ""; // Clear message after fade-out
-            this.modalMessageClass = ""; // Reset class for next message
-          }, 500); // Time to wait before clearing message
-        }, 3000); // Display message for 3000 ms (3 seconds)
+            this.modalMessage = "";
+            this.modalMessageClass = "";
+          }, 500);
+        }, 3000);
       } catch (error) {
         console.error("Error creating city:", error);
         this.modalMessage = "Error registering city.";
-        this.modalMessageClass = "error"; // Add a class for error styling
+        this.modalMessageClass = "error";
 
-        // Clear the modal message after 3 seconds with a fade-out effect
         setTimeout(() => {
-          this.modalMessageClass = "fade-out"; // Trigger fade-out
+          this.modalMessageClass = "fade-out";
           setTimeout(() => {
-            this.modalMessage = ""; // Clear message after fade-out
-            this.modalMessageClass = ""; // Reset class for next message
-          }, 500); // Time to wait before clearing message
-        }, 3000); // Display message for 3000 ms (3 seconds)
+            this.modalMessage = "";
+            this.modalMessageClass = "";
+          }, 500);
+        }, 3000);
       }
     },
 
     createCity() {
-      this.showModal = true; // Show the modal
+      this.showModal = true;
       this.newCity = {
-        // Reset newCity object
         name: "",
         latitude: null,
         longitude: null,
       };
-      this.modalMessage = ""; // Reset any previous message
+      this.modalMessage = "";
     },
     async searchEarthquake() {
       if (!this.selectedCity || !this.startDate || !this.endDate) {
@@ -206,6 +225,37 @@ export default {
         this.loading = false;
       }
     },
+    async getHistory() {
+      try {
+        const response = await axios.get(`/api/results/`);
+        const results = response.data || [];
+
+        const flattenedResults = results.flat().map((result) => {
+          let date;
+          try {
+            date = new Date(result.date);
+            if (isNaN(date.getTime())) {
+              throw new Error("Invalid date");
+            }
+          } catch (error) {
+            console.error("Error parsing date:", error);
+            date = new Date();
+          }
+
+          return {
+            city: result.city || "Unknown",
+            date: date.toISOString(),
+            place: result.place || "Unknown",
+            magnitude: result.magnitude || 0,
+            distance_km: result.distance_km || 0,
+          };
+        });
+
+        this.history.push(...flattenedResults);
+      } catch (error) {
+        console.error("Error fetching history:", error);
+      }
+    },
     async retryFetchResults(requestId) {
       let attempts = 0;
       const maxAttempts = 5;
@@ -223,6 +273,14 @@ export default {
             await this.delay(delay);
           } else {
             this.earthquakeResults = results;
+
+            this.history.push(
+              ...results.map((result) => ({
+                ...result,
+                date: new Date(result.date).toISOString(),
+              }))
+            );
+
             return;
           }
         } catch (error) {
@@ -269,6 +327,13 @@ h2 {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  transition: border-color 0.3s;
+}
+
+.city-dropdown:focus,
+.date-picker:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 .search-btn,
@@ -309,18 +374,29 @@ h2 {
   margin-top: 40px;
   text-align: left;
 }
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
+
+thead {
+  background-color: #007bff;
+  color: white;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -340,7 +416,7 @@ h2 {
   border-radius: 8px;
   width: 300px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center; /* Center text in modal */
+  text-align: center;
 }
 
 .modal h3 {
@@ -349,63 +425,59 @@ h2 {
 
 .modal-form {
   display: flex;
-  flex-direction: column; /* Stack inputs vertically */
+  flex-direction: column;
 }
 
 .input-container {
-  margin-bottom: 15px; /* Space between inputs */
+  margin-bottom: 15px;
   display: flex;
-  flex-direction: column; /* Stack label and input */
-  align-items: center; /* Center inputs */
+  flex-direction: column;
+  align-items: center;
 }
 
 .modal input {
-  width: 80%; /* Set input width */
-  margin-top: 5px; /* Space between label and input */
+  width: 80%;
+  margin-top: 5px;
   padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
 }
 
 .submit-btn,
 .cancel-btn {
   padding: 10px 20px;
-  margin: 10px 0;
+  margin-top: 10px;
   font-size: 16px;
-  color: white;
-  background-color: #007bff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.submit-btn:hover,
-.cancel-btn:hover {
-  background-color: #0056b3; /* Darker shade for hover effect */
+.submit-btn {
+  background-color: #007bff;
+  color: white;
 }
 
 .cancel-btn {
-  background-color: #dc3545; /* Red background for cancel */
+  background-color: #dc3545;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
 }
 
 .cancel-btn:hover {
-  background-color: #c82333; /* Darker shade for hover effect */
+  background-color: #c82333;
 }
 
 .modal-message {
   margin-top: 15px;
-  color: green; /* Default success color */
-  transition: opacity 0.5s ease-in-out; /* Smooth transition */
+  font-weight: bold;
 }
 
-.modal-message.error {
-  color: red; /* Error color */
-}
-
-/* Add a fade-out class for the message */
 .fade-out {
   opacity: 0;
+  transition: opacity 0.5s ease-out;
 }
 </style>
