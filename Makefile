@@ -5,14 +5,17 @@
 
 CONTAINER=web
 
-install:
+.env:
+	cp .env.example .env
+
+install: .env
 	@poetry install
 
 shell:
 	@poetry shell
 
 # I did that to insure that the front end will be built before running the Django app
-start: build
+start: .env build
 	@docker-compose up -d --build
 
 stop:
@@ -29,4 +32,5 @@ log:
 logs:
 	@docker-compose logs -f -t "${CONTAINER}"
 
+.PHONY: .env install shell start stop restart build log logs
 # end
