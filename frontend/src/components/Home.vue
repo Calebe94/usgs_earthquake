@@ -487,33 +487,43 @@ tr:hover {
   text-align: left;
   border: 1px solid #ddd;
 }
-
 @media screen and (max-width: 768px) {
   .responsive-table thead {
     display: none;
   }
 
-  .responsive-table tr {
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
     display: block;
-    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 10px;
     border-bottom: 2px solid #ddd;
   }
 
   .responsive-table td {
-    display: block;
     text-align: right;
+    padding-left: 20%;
     position: relative;
-    padding-left: 50%;
   }
 
   .responsive-table td::before {
     content: attr(data-label);
     position: absolute;
-    left: 0;
-    width: 45%;
-    padding-left: 10px;
+    left: 10px;
+    width: calc(50% - 20px);
+    white-space: nowrap;
     font-weight: bold;
     text-align: left;
+  }
+
+  .responsive-table td[data-label="Date"] {
+    white-space: normal;
+    word-wrap: break-word;
   }
 }
 </style>
