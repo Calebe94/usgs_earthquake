@@ -28,6 +28,8 @@ def fetch_earthquakes_task(city_id, start_date, end_date):
     new_data = fetch_and_store_new_data(city, missing_ranges)
 
     combined_data = cached_data + new_data
+    # cache_key = f"earthquake_results_{fetch_earthquakes_task.request.id}"
+    # cache.set(cache_key, combined_data, timeout=86400)
 
     logger.info(
         f"Data fetching complete for city {city.name}. Combined data length: {len(combined_data)}")  # noqa

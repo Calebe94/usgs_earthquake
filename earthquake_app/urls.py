@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from earthquakes.views import EarthquakeSearchView, EarthquakeResultView
+from earthquakes.views import EarthquakeSearchView, EarthquakeResultView, EarthquakeResultsListView
 from earthquakes.views import CityViewSet, HomePageView
 
 router = DefaultRouter()
@@ -31,6 +31,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/cities/<int:city_id>/earthquakes/',
          EarthquakeSearchView.as_view(), name='search-earthquake'),
-    path('api/cities/results/<str:task_id>',
+    path('api/cities/results/<str:task_id>/',
          EarthquakeResultView.as_view(), name='earthquake-results'),
+    path('api/results/',
+         EarthquakeResultsListView.as_view(), name='earthquake-results-list'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
