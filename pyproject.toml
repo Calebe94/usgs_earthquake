@@ -24,6 +24,7 @@ celery = {version = "==5.2.7", extras = ["redis"]}
 redis = ">=4.5.0"
 kombu = ">=5.2.0"
 django-redis = "*"
+django-cors-headers = ">=4.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

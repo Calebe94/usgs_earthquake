@@ -43,6 +43,13 @@ services:
     env_file:
       - ./.env
 
+  frontend_builder:
+    image: node:lts-alpine
+    working_dir: /code/frontend
+    volumes:
+      - .:/code
+    command: sh -c "npm install && npm run build"
+
   web:
     build: .
     command: >
@@ -56,6 +63,7 @@ services:
       - db
       - redis
       - celery_worker
+      - frontend_builder
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - START_TYPE=WEB

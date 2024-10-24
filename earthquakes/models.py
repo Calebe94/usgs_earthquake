@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class City(models.Model):
@@ -6,8 +7,14 @@ class City(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    # TODO: latitude and longitude goes from -90 to 90
-    # Values greater or smaller than this should return an error
+    def clean(self):
+        if not (-90 <= self.latitude <= 90):
+            raise ValidationError(
+                "Latitude must be between -90 and 90 degrees")
+        if not (-90 <= self.longitude <= 90):
+            raise ValidationError(
+                "Longitude must be between -90 and 90 degrees")
+
     class Meta:
         unique_together = ('name', 'latitude', 'longitude')
 
