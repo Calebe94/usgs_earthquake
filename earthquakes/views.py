@@ -69,14 +69,7 @@ class HomePageView(TemplateView):
 
 class EarthquakeResultsListView(APIView):
     def get(self, request):
-        keys = cache.keys('earthquake_*')
-        logger.info(f"Cache keys: {keys}")
+        results = CachedEarthquakeData.objects.all().values()
+        logger.info(f"Results retrieved: {results}")
 
-        results = []
-        for key in keys:
-            cached_data = cache.get(key)
-            if cached_data:
-                results.append(cached_data)
-
-        logger.info(results)
-        return JsonResponse(results, safe=False, status=200)
+        return JsonResponse(list(results), safe=False, status=200)
