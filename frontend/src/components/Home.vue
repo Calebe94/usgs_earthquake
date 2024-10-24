@@ -74,8 +74,9 @@
       <h3>Earthquake Results</h3>
       <ul>
         <li v-for="result in earthquakeResults" :key="result.date">
-          {{ result.place }} - Magnitude: {{ result.magnitude }} (Distance:
-          {{ result.distance_km }} km)
+          The closest Earthquake to {{ result.city }} was a M
+          {{ result.magnitude }} - {{ result.place }} on
+          {{ new Date(result.date).toLocaleString() }}
         </li>
       </ul>
     </div>
