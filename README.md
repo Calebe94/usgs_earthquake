@@ -63,17 +63,24 @@ This project is a backend service written in **Django 4** that provides a system
   - **Uvicorn**: ASGI server to serve the Django application.
   - **Node.js**: For building the frontend Vue.js app.
 
-## Dependencies:
+## Install dependencies:
 
-Here are the OS level dependencies. This project is developed in a debian-based Linux distro. And here are the dependencies you should install first:
+Here are the OS level dependencies. This project is developed in a debian-based Linux distro. But since everything runs in Docker containers, it will run in every OS that has `dockerd` in it.
 
+### For Debian-based distros
+
+Follow these steps to set up the project on a Debian-based Linux distribution:
+
+1. Install dependencies:
+
+Ensure you have the following installed:
 * Python >= 3.9
 * pip
 * poetry
 * Docker
 * docker-compose
 
-On a Debian based distro you can run the following command:
+To install Python, pip, and Poetry, run:
 
 ``` sh
 sudo apt update && sudo apt install -y python3 python3-pip python3-poetry
@@ -98,6 +105,100 @@ sudo apt-get update
 # Install the docker dependency
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
+
+### For macOS
+
+1. Install Dependencies
+
+On macOS, you will need the following:
+
+* Python >= 3.9
+* pip
+* Poetry
+* Docker Desktop (includes Docker Compose)
+
+To install Homebrew if you don’t already have it:
+
+``` bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then, install the dependencies:
+
+```bash
+brew install python@3.9
+brew install poetry
+brew install --cask docker
+```
+
+Ensure that Docker Desktop is running before proceeding to the next steps.
+
+### For Windows
+
+PS: I personally was not able to test this
+
+Follow these steps to set up the project on a Windows operating system.
+
+1. **Install Dependencies**
+
+On Windows, you'll need the following:
+
+- **Python >= 3.9**
+- **pip**
+- **Poetry**
+- **Docker Desktop** (includes Docker Compose)
+
+#### Step-by-step guide:
+
+1. **Install Python and pip**:
+   Download and install Python from the official website: [python.org](https://www.python.org/downloads/). Ensure that you check the option to "Add Python to PATH" during installation.
+
+   After installation, open a command prompt and run:
+   ```bash
+   python --version
+   ```
+
+   This should display the installed Python version. Then, verify that `pip` was installed properly:
+   ```bash
+   pip --version
+   ```
+
+2. [Install Poetry](https://gist.github.com/Isfhan/b8b104c8095d8475eb377230300de9b0):
+   To install Poetry, you can follow the official documentation for Windows, but the easiest way is to use the command prompt or PowerShell. Open a terminal and run:
+
+   ```bash
+   (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+   ```
+
+   After the installation, make sure Poetry is added to your system’s `PATH` variable, or you may need to restart your terminal. Then check that Poetry is installed:
+
+   ```bash
+   poetry --version
+   ```
+
+3. **Install Docker Desktop**:
+   Download and install Docker Desktop from the official website: [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop).
+
+   After installation, start Docker Desktop and ensure it is running. You can check if Docker is correctly installed by running the following command in your terminal or PowerShell:
+
+   ```bash
+   docker --version
+   ```
+
+4. **Configure WSL 2**:
+   For Docker Desktop on Windows, it's recommended to use **WSL 2** (Windows Subsystem for Linux) for better performance.
+
+   - Install WSL 2 by following the instructions from Microsoft: [Install WSL](https://docs.microsoft.com/en-us/windows/wsl/install).
+   - Make sure to configure Docker Desktop to use WSL 2. You can do this in the Docker Desktop settings under "General" by checking the box for "Use the WSL 2 based engine."
+
+5. **Verify Docker Compose**:
+   Since Docker Desktop includes Docker Compose, you can verify its installation by running:
+
+   ```bash
+   docker-compose --version
+   ```
+
+After completing these steps, you should have all the necessary dependencies installed to run the project.
 
 ## Setup and Execution
 
